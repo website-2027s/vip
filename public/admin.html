@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Admin — VIP Channels</title>
+<meta name="theme-color" content="#130C18">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23D9B76E' stroke-width='1.8' stroke-linejoin='round'><path d='M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5L3 8z'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/app.css">
+<style>
+  .admin-wrap{max-width:980px;margin:0 auto;padding:22px clamp(14px,4vw,28px) 120px}
+  .tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:4px;border-radius:14px;background:rgba(0,0,0,.25);margin-bottom:22px}
+  .tabs::-webkit-scrollbar{display:none}
+  .tabs button{flex:none;min-height:44px;padding:0 16px;border:0;border-radius:10px;background:transparent;color:var(--muted);font-weight:600;font-size:.88rem}
+  .tabs button[aria-selected="true"]{background:var(--card-2);color:var(--gold-hi);box-shadow:inset 0 0 0 1px var(--line)}
+  .panel{padding:clamp(18px,3vw,26px);border-radius:18px;border:1px solid var(--line);background:rgba(33,22,41,.7)}
+  .panel+.panel{margin-top:16px}
+  .panel h2{font-family:var(--display);font-size:1.7rem;color:var(--gold-hi);line-height:1.1;margin-bottom:4px}
+  .panel .lead{color:var(--muted);font-size:.86rem;margin-bottom:18px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+  .seg{display:inline-flex;gap:4px;padding:4px;border-radius:12px;background:rgba(0,0,0,.25);margin-bottom:18px;flex-wrap:wrap}
+  .seg button{min-height:40px;padding:0 14px;border:0;border-radius:9px;background:transparent;color:var(--muted);font-weight:600;font-size:.85rem}
+  .seg button[aria-pressed="true"]{background:var(--card-2);color:var(--gold-hi);box-shadow:inset 0 0 0 1px var(--line)}
+  .btn-rows{display:grid;gap:8px}
+  .btn-row{display:grid;grid-template-columns:34px minmax(0,1fr) minmax(0,1.4fr) 44px;gap:8px;align-items:center}
+  .btn-row .n{display:grid;place-items:center;height:34px;border-radius:9px;background:rgba(217,183,110,.12);color:var(--gold-hi);font-size:.78rem;font-weight:700}
+  .btn-row .input{min-height:44px}
+  .btn-row-head{display:grid;grid-template-columns:34px minmax(0,1fr) minmax(0,1.4fr) 44px;gap:8px;font-size:.75rem;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+  .savebar{position:fixed;left:0;right:0;bottom:0;z-index:40;padding:12px clamp(14px,4vw,28px) calc(12px + env(safe-area-inset-bottom,0px));
+    background:rgba(19,12,24,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;gap:12px;transform:translateY(110%);transition:transform .25s var(--ease)}
+  .savebar.show{transform:none}
+  .savebar p{font-size:.88rem;color:var(--muted)}
+  .qr-admin{display:grid;grid-template-columns:220px 1fr;gap:22px;align-items:start}
+  .qr-admin .qr-frame{margin:0;width:100%}
+  .car-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+  .car-item{border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--card)}
+  .car-item img{width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--bg-2)}
+  .car-item .body{padding:10px;display:grid;gap:8px}
+  .car-item .tools{display:flex;gap:6px}
+  .car-item .tools .icon-btn{width:40px;height:40px}
+  .car-item .tools .grow{flex:1}
+  .dropzone{display:grid;place-items:center;gap:8px;text-align:center;padding:26px;border-radius:14px;border:1.5px dashed var(--line-strong);color:var(--muted);cursor:pointer;margin-bottom:16px;transition:background .18s ease}
+  .dropzone:hover,.dropzone.drag{background:rgba(217,183,110,.06)}
+  .dropzone svg{width:28px;height:28px;color:var(--gold)}
+  .users{display:grid;gap:10px}
+  .user{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 14px;align-items:center;padding:14px;border-radius:14px;border:1px solid var(--line);background:var(--card)}
+  .user .who{min-width:0}
+  .user .who strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .user .who span{font-size:.78rem;color:var(--muted)}
+  .user .ctrls{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+  .user select.input{min-height:40px;width:auto;padding:6px 10px;font-size:.88rem}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+  .stat{padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);text-align:center}
+  .stat b{display:block;font-family:var(--display);font-size:1.8rem;color:var(--cream);line-height:1}
+  .stat span{font-size:.75rem;color:var(--muted)}
+  @media (max-width:680px){
+    .row2,.qr-admin{grid-template-columns:1fr}
+    .qr-admin .qr-frame{max-width:260px;margin:0 auto}
+    .btn-row{grid-template-columns:28px minmax(0,1fr) 44px;grid-template-areas:"n name del" "n url url"}
+    .btn-row .n{grid-area:n;align-self:start;height:28px}
+    .btn-row .name{grid-area:name}.btn-row .url{grid-area:url}.btn-row .del{grid-area:del}
+    .btn-row-head{display:none}
+    .user{grid-template-columns:1fr}
+    .user .ctrls{justify-content:flex-start}
+    .stats{grid-template-columns:repeat(2,1fr)}
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="/">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5L3 8z"/></svg>
+    <span>Admin</span>
+  </a>
+  <div class="top-right">
+    <a class="btn btn-ghost btn-sm" href="/">View site</a>
+    <button class="icon-btn" id="logoutBtn" aria-label="Log out">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="admin-wrap">
+  <nav class="tabs" role="tablist" aria-label="Admin sections" id="tabs">
+    <button role="tab" data-tab="general" aria-selected="true">General</button>
+    <button role="tab" data-tab="packages" aria-selected="false">Packages &amp; buttons</button>
+    <button role="tab" data-tab="qr" aria-selected="false">Payment QR</button>
+    <button role="tab" data-tab="carousel" aria-selected="false">Coffee carousel</button>
+    <button role="tab" data-tab="users" aria-selected="false">Users &amp; tiers</button>
+    <button role="tab" data-tab="account" aria-selected="false">My account</button>
+  </nav>
+
+  <!-- GENERAL -->
+  <div data-panel="general">
+    <div class="panel">
+      <h2>Site text</h2>
+      <p class="lead">Shown at the top of the homepage.</p>
+      <div class="field"><label for="siteTitle">Site title</label><input class="input" id="siteTitle" data-s="siteTitle"></div>
+      <div class="field"><label for="siteSub">Subtitle</label><input class="input" id="siteSub" data-s="siteSub"></div>
+      <div class="field"><label for="carouselTitle">Carousel heading</label><input class="input" id="carouselTitle" data-s="carouselTitle"></div>
+      <div class="field"><label for="footer">Footer note</label><input class="input" id="footer" data-s="footer"></div>
+    </div>
+    <div class="panel">
+      <h2>Links</h2>
+      <p class="lead">Telegram (https://t.me/…), Messenger (https://m.me/…), any https:// link, or mailto:.</p>
+      <div class="row2">
+        <div class="field"><label for="contactLabel">Contact button text</label><input class="input" id="contactLabel" data-s="contactLabel"></div>
+        <div class="field"><label for="contactUrl">Contact us link</label><input class="input" id="contactUrl" data-s="contactUrl" inputmode="url" placeholder="https://t.me/yourname"><span class="help">Leave empty to hide the Contact section.</span></div>
+      </div>
+      <div class="field"><label for="sendUrl">"Send receipt here" link (in the upgrade popup)</label><input class="input" id="sendUrl" data-s="sendUrl" inputmode="url" placeholder="https://t.me/yourname"></div>
+    </div>
+    <div class="panel">
+      <h2>Lock popup</h2>
+      <p class="lead">Shown when a user taps a locked button.</p>
+      <div class="field"><label for="lockTitle">Title</label><input class="input" id="lockTitle" data-s="lockTitle"></div>
+      <div class="field"><label for="lockText">Message</label><textarea class="input" id="lockText" data-s="lockText"></textarea></div>
+      <label class="check"><input type="checkbox" id="bUnlocksA"> Package B members can also open Package A</label>
+    </div>
+  </div>
+
+  <!-- PACKAGES -->
+  <div data-panel="packages" class="hidden">
+    <div class="seg" role="group" aria-label="Package" id="pkgSeg">
+      <button data-pkg="free" aria-pressed="true">Free Plan</button>
+      <button data-pkg="a" aria-pressed="false">Package A</button>
+      <button data-pkg="b" aria-pressed="false">Package B</button>
+    </div>
+    <div class="panel">
+      <h2 id="pkgHeading">Card</h2>
+      <p class="lead">The rectangle box on the homepage.</p>
+      <div class="row2">
+        <div class="field"><label for="p-name">Package name</label><input class="input" id="p-name" data-p="name"></div>
+        <div class="field"><label for="p-countLabel">Label under the number</label><input class="input" id="p-countLabel" data-p="countLabel"></div>
+        <div class="field"><label for="p-price">Price</label><input class="input" id="p-price" data-p="price"></div>
+        <div class="field"><label for="p-priceNote">Price note</label><input class="input" id="p-priceNote" data-p="priceNote"></div>
+      </div>
+      <div class="field"><label for="p-desc">Description (optional)</label><textarea class="input" id="p-desc" data-p="desc"></textarea></div>
+    </div>
+    <div class="panel">
+      <h2>Buttons <span id="btnCount" style="color:var(--muted);font-size:1.1rem"></span></h2>
+      <p class="lead">Name and link for each button. Links are hidden from users who haven't unlocked this package.</p>
+      <div class="btn-row-head" aria-hidden="true"><span>#</span><span>Name</span><span>Link</span><span></span></div>
+      <div class="btn-rows" id="btnRows"></div>
+      <button class="btn btn-ghost btn-sm" id="addBtn" style="margin-top:14px">+ Add button</button>
+    </div>
+  </div>
+
+  <!-- QR -->
+  <div data-panel="qr" class="hidden">
+    <div class="panel">
+      <h2>Payment QR</h2>
+      <p class="lead">Shown when a user taps Upgrade. Uploading replaces it immediately.</p>
+      <div class="qr-admin">
+        <div class="qr-frame"><img id="qrPreview" alt="Current payment QR"></div>
+        <div>
+          <label class="dropzone" id="qrDrop">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4m0 0l-4 4m4-4l4 4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+            <span><strong style="color:var(--gold-hi)">Upload new QR</strong><br>PNG or JPG</span>
+            <input type="file" id="qrFile" accept="image/png,image/jpeg,image/webp" class="sr-only">
+          </label>
+          <div class="field"><label for="qrHint">Text under the QR</label><input class="input" id="qrHint" data-s="qrHint"></div>
+          <button class="btn btn-danger btn-sm" id="qrReset">Restore original QR</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAROUSEL -->
+  <div data-panel="carousel" class="hidden">
+    <div class="panel">
+      <h2>Coffee bean photos</h2>
+      <p class="lead">Users swipe through these on the homepage. Photos are resized automatically.</p>
+      <label class="dropzone" id="carDrop">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>
+        <span><strong style="color:var(--gold-hi)">Add photos</strong><br>Tap to choose, or drop images here</span>
+        <input type="file" id="carFile" accept="image/*" multiple class="sr-only">
+      </label>
+      <div class="car-grid" id="carGrid"></div>
+    </div>
+  </div>
+
+  <!-- USERS -->
+  <div data-panel="users" class="hidden">
+    <div class="stats" id="stats"></div>
+    <div class="panel">
+      <h2>Users</h2>
+      <p class="lead">Change a user's tier after you confirm their payment. It applies instantly.</p>
+      <div class="field"><label for="userSearch" class="sr-only">Search users</label><input class="input" id="userSearch" type="search" placeholder="Search username…"></div>
+      <div class="users" id="userList"></div>
+    </div>
+  </div>
+
+  <!-- ACCOUNT -->
+  <div data-panel="account" class="hidden">
+    <div class="panel">
+      <h2>Change my password</h2>
+      <p class="lead" id="meLine"></p>
+      <form id="pwForm" novalidate>
+        <div class="field"><label for="curPw">Current password</label><input class="input" id="curPw" type="password" autocomplete="current-password"></div>
+        <div class="field"><label for="newPw">New password</label><input class="input" id="newPw" type="password" autocomplete="new-password"><span class="help">At least 6 characters.</span></div>
+        <p class="err" id="pwErr" role="alert" style="color:var(--danger);font-size:.85rem;margin-bottom:10px"></p>
+        <button class="btn btn-primary" type="submit">Update password</button>
+      </form>
+    </div>
+  </div>
+</main>
+
+<div class="savebar" id="savebar" role="region" aria-label="Unsaved changes">
+  <p>You have unsaved changes</p>
+  <button class="btn btn-ghost btn-sm" id="discardBtn">Discard</button>
+  <button class="btn btn-primary btn-sm" id="saveBtn">Save changes</button>
+</div>
+
+<!-- Reset password modal -->
+<div class="modal" id="resetModal" role="dialog" aria-modal="true" aria-labelledby="resetTitle" aria-hidden="true">
+  <div class="sheet" style="text-align:left">
+    <button class="close" data-close aria-label="Close"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <h3 id="resetTitle">Reset password</h3>
+    <p class="sub" id="resetWho" style="margin-bottom:16px"></p>
+    <div class="field"><label for="resetPw">New password</label><input class="input" id="resetPw" type="text" autocomplete="off"><span class="help">Give this to the user. At least 6 characters.</span></div>
+    <div class="actions"><button class="btn btn-primary" id="resetGo">Set password</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+  const TIERS = { free: 'Free', a: 'Package A', b: 'Package B' };
+  let S = null, saved = '', carousel = [], users = [], me = null, curPkg = 'free';
+
+  function toast(msg, err) { const t = $('toast'); t.textContent = msg; t.classList.toggle('err', !!err); t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 2600); }
+  async function api(url, opts = {}) {
+    const r = await fetch(url, { credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, ...opts, body: opts.body ? JSON.stringify(opts.body) : undefined });
+    if (r.status === 401) { location.replace('/login'); throw new Error('auth'); }
+    if (r.status === 403) { location.replace('/'); throw new Error('forbidden'); }
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(d.error || 'Request failed');
+    return d;
+  }
+
+  /* ---------- Tabs ---------- */
+  function showTab(name) {
+    document.querySelectorAll('#tabs [data-tab]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
+    document.querySelectorAll('[data-panel]').forEach(p => p.classList.toggle('hidden', p.dataset.panel !== name));
+    history.replaceState(null, '', '#' + name);
+  }
+  document.querySelectorAll('#tabs [data-tab]').forEach(b => b.onclick = () => showTab(b.dataset.tab));
+
+  /* ---------- Dirty tracking ---------- */
+  const snapshot = () => JSON.stringify(S);
+  function dirtyCheck() { $('savebar').classList.toggle('show', snapshot() !== saved); }
+  window.addEventListener('beforeunload', e => { if (S && snapshot() !== saved) { e.preventDefault(); e.returnValue = ''; } });
+
+  function fillGeneral() {
+    document.querySelectorAll('[data-s]').forEach(i => { i.value = S[i.dataset.s] || ''; });
+    $('bUnlocksA').checked = !!S.bUnlocksA;
+  }
+  document.querySelectorAll('[data-s]').forEach(i => i.addEventListener('input', () => { S[i.dataset.s] = i.value; dirtyCheck(); }));
+  $('bUnlocksA').onchange = e => { S.bUnlocksA = e.target.checked; dirtyCheck(); };
+
+  /* ---------- Packages ---------- */
+  function fillPackage() {
+    const p = S.packages[curPkg];
+    document.querySelectorAll('#pkgSeg [data-pkg]').forEach(b => { b.setAttribute('aria-pressed', String(b.dataset.pkg === curPkg)); b.textContent = S.packages[b.dataset.pkg].name || TIERS[b.dataset.pkg]; });
+    $('pkgHeading').textContent = (p.name || TIERS[curPkg]) + ' card';
+    document.querySelectorAll('[data-p]').forEach(i => { i.value = p[i.dataset.p] || ''; });
+    renderRows();
+  }
+  document.querySelectorAll('[data-p]').forEach(i => i.addEventListener('input', () => { S.packages[curPkg][i.dataset.p] = i.value; dirtyCheck(); if (i.dataset.p === 'name') document.querySelector(`#pkgSeg [data-pkg="${curPkg}"]`).textContent = i.value || TIERS[curPkg]; }));
+  document.querySelectorAll('#pkgSeg [data-pkg]').forEach(b => b.onclick = () => { curPkg = b.dataset.pkg; fillPackage(); });
+
+  function renderRows() {
+    const list = S.packages[curPkg].buttons, box = $('btnRows'); box.innerHTML = '';
+    $('btnCount').textContent = `(${list.length})`;
+    list.forEach((bt, i) => {
+      const row = el('div', 'btn-row');
+      const n = el('span', 'n', String(i + 1)); n.setAttribute('aria-hidden', 'true');
+      const name = el('input', 'input name'); name.value = bt.name; name.setAttribute('aria-label', `Button ${i + 1} name`); name.maxLength = 80;
+      const url = el('input', 'input url'); url.value = bt.url; url.placeholder = 'https://…'; url.inputMode = 'url'; url.setAttribute('aria-label', `Button ${i + 1} link`);
+      const del = el('button', 'icon-btn del'); del.type = 'button'; del.setAttribute('aria-label', `Remove button ${i + 1}`);
+      del.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>';
+      name.oninput = () => { bt.name = name.value; dirtyCheck(); };
+      url.oninput = () => { bt.url = url.value; dirtyCheck(); };
+      del.onclick = () => { if (confirm(`Remove "${bt.name}"?`)) { list.splice(i, 1); renderRows(); dirtyCheck(); } };
+      row.append(n, name, url, del); box.append(row);
+    });
+  }
+  $('addBtn').onclick = () => {
+    const list = S.packages[curPkg].buttons;
+    list.push({ name: `Channel ${list.length + 1}`, url: '' }); renderRows(); dirtyCheck();
+    const last = $('btnRows').lastElementChild.querySelector('.name'); last.focus(); last.select();
+  };
+
+  /* ---------- Save ---------- */
+  $('saveBtn').onclick = async () => {
+    const btn = $('saveBtn'); btn.disabled = true; btn.innerHTML = '<span class="spinner" aria-hidden="true"></span> Saving';
+    try {
+      const d = await api('/api/admin/settings', { method: 'PUT', body: S });
+      const changed = ['contactUrl', 'sendUrl'].some(k => (S[k] || '') !== (d.settings[k] || '')) ||
+        Object.keys(S.packages).some(k => S.packages[k].buttons.some((b, i) => (b.url || '') !== d.settings.packages[k].buttons[i].url));
+      S = d.settings; saved = snapshot(); fillGeneral(); fillPackage(); dirtyCheck();
+      toast(changed ? 'Saved. Some links were fixed or removed (must start with https://, tg:, or mailto:)' : 'Saved');
+    } catch (e) { toast(e.message, true); }
+    finally { btn.disabled = false; btn.textContent = 'Save changes'; }
+  };
+  $('discardBtn').onclick = () => { S = JSON.parse(saved); fillGeneral(); fillPackage(); dirtyCheck(); };
+
+  /* ---------- Image helpers ---------- */
+  function resize(file, max, type, quality) {
+    return new Promise((resolve, reject) => {
+      const img = new Image(); const url = URL.createObjectURL(file);
+      img.onload = () => {
+        const k = Math.min(1, max / Math.max(img.width, img.height));
+        const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+        const ctx = c.getContext('2d'); if (type === 'image/jpeg') { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height); }
+        ctx.drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+        resolve(c.toDataURL(type, quality));
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Could not read that image')); };
+      img.src = url;
+    });
+  }
+
+  /* ---------- QR ---------- */
+  function fillQr() { $('qrPreview').src = S.qrUrl + '?v=' + Date.now(); }
+  $('qrFile').onchange = async e => {
+    const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+    try {
+      toast('Uploading QR…');
+      const dataUrl = await resize(f, 1200, 'image/png');
+      const d = await api('/api/admin/qr', { method: 'POST', body: { dataUrl } });
+      S.qrUrl = d.qrUrl; const s = JSON.parse(saved); s.qrUrl = d.qrUrl; saved = JSON.stringify(s); fillQr(); dirtyCheck(); toast('QR updated');
+    } catch (err) { toast(err.message, true); }
+  };
+  $('qrReset').onclick = async () => {
+    if (!confirm('Restore the original QR from the project files?')) return;
+    try { const d = await api('/api/admin/qr', { method: 'POST', body: { reset: true } }); S.qrUrl = d.qrUrl; const s = JSON.parse(saved); s.qrUrl = d.qrUrl; saved = JSON.stringify(s); fillQr(); dirtyCheck(); toast('Original QR restored'); }
+    catch (err) { toast(err.message, true); }
+  };
+
+  /* ---------- Carousel ---------- */
+  function renderCarousel() {
+    const g = $('carGrid'); g.innerHTML = '';
+    if (!carousel.length) { g.append(el('p', 'empty', 'No photos yet. Add your coffee beans above.')); return; }
+    carousel.forEach((it, i) => {
+      const card = el('div', 'car-item');
+      const img = el('img'); img.src = it.url; img.alt = it.caption || `Photo ${i + 1}`; img.loading = 'lazy';
+      const body = el('div', 'body');
+      const cap = el('input', 'input'); cap.placeholder = 'Caption (optional)'; cap.value = it.caption || ''; cap.maxLength = 140; cap.setAttribute('aria-label', `Caption for photo ${i + 1}`);
+      cap.onchange = () => { it.caption = cap.value; pushOrder('Caption saved'); };
+      const tools = el('div', 'tools');
+      const mk = (label, svg, fn, dis) => { const b = el('button', 'icon-btn'); b.type = 'button'; b.setAttribute('aria-label', label); b.innerHTML = svg; b.onclick = fn; b.disabled = !!dis; if (dis) b.style.opacity = .35; return b; };
+      tools.append(
+        mk('Move left', '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>', () => move(i, -1), i === 0),
+        mk('Move right', '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>', () => move(i, 1), i === carousel.length - 1),
+        el('span', 'grow'),
+        mk('Remove photo', '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>', () => removePhoto(it))
+      );
+      tools.lastChild.style.color = 'var(--danger)';
+      body.append(cap, tools); card.append(img, body); g.append(card);
+    });
+  }
+  async function pushOrder(msg) {
+    try { const d = await api('/api/admin/carousel', { method: 'PUT', body: { items: carousel.map(c => ({ id: c.id, caption: c.caption })) } }); carousel = d.carousel; renderCarousel(); if (msg) toast(msg); }
+    catch (e) { toast(e.message, true); }
+  }
+  function move(i, dir) { const j = i + dir; [carousel[i], carousel[j]] = [carousel[j], carousel[i]]; renderCarousel(); pushOrder(); }
+  async function removePhoto(it) {
+    if (!confirm('Remove this photo from the carousel?')) return;
+    try { const d = await api('/api/admin/carousel/' + it.id, { method: 'DELETE' }); carousel = d.carousel; renderCarousel(); toast('Photo removed'); }
+    catch (e) { toast(e.message, true); }
+  }
+  async function addPhotos(files) {
+    const list = [...files].filter(f => f.type.startsWith('image/')); if (!list.length) return;
+    let n = 0;
+    for (const f of list) {
+      try {
+        toast(`Uploading ${++n} of ${list.length}…`);
+        const dataUrl = await resize(f, 1600, 'image/jpeg', 0.85);
+        const d = await api('/api/admin/carousel', { method: 'POST', body: { dataUrl, caption: '' } });
+        carousel = d.carousel; renderCarousel();
+      } catch (e) { toast(`${f.name}: ${e.message}`, true); }
+    }
+    toast(list.length === 1 ? 'Photo added' : `${list.length} photos added`);
+  }
+  $('carFile').onchange = e => { addPhotos(e.target.files); e.target.value = ''; };
+  ['carDrop', 'qrDrop'].forEach(id => {
+    const z = $(id);
+    z.addEventListener('dragover', e => { e.preventDefault(); z.classList.add('drag'); });
+    z.addEventListener('dragleave', () => z.classList.remove('drag'));
+    z.addEventListener('drop', e => {
+      e.preventDefault(); z.classList.remove('drag');
+      if (id === 'carDrop') addPhotos(e.dataTransfer.files);
+      else if (e.dataTransfer.files[0]) { const dt = new DataTransfer(); dt.items.add(e.dataTransfer.files[0]); $('qrFile').files = dt.files; $('qrFile').dispatchEvent(new Event('change')); }
+    });
+  });
+
+  /* ---------- Users ---------- */
+  function renderStats() {
+    const c = { all: users.length, free: 0, a: 0, b: 0 }; users.forEach(u => c[u.tier]++);
+    $('stats').innerHTML = '';
+    [['Total users', c.all], ['Free', c.free], ['Package A', c.a], ['Package B', c.b]].forEach(([l, v]) => { const s = el('div', 'stat'); s.append(el('b', null, String(v)), el('span', null, l)); $('stats').append(s); });
+  }
+  function renderUsers() {
+    renderStats();
+    const q = $('userSearch').value.trim().toLowerCase();
+    const box = $('userList'); box.innerHTML = '';
+    const list = users.filter(u => !q || u.username.toLowerCase().includes(q)).sort((a, b) => b.createdAt - a.createdAt);
+    if (!list.length) { box.append(el('p', 'empty', q ? 'No users match.' : 'No users yet.')); return; }
+    list.forEach(u => {
+      const row = el('div', 'user');
+      const who = el('div', 'who'); who.append(el('strong', null, u.username + (u.id === me.id ? ' (you)' : '')), el('span', null, `Joined ${new Date(u.createdAt).toLocaleDateString()}${u.role === 'admin' ? ' · Admin' : ''}`));
+      const ctrls = el('div', 'ctrls');
+      const tier = el('select', 'input'); tier.setAttribute('aria-label', `Tier for ${u.username}`);
+      Object.entries(TIERS).forEach(([k, v]) => { const o = el('option', null, k === 'free' ? 'Free account' : (S.packages[k].name || v)); o.value = k; o.selected = u.tier === k; tier.append(o); });
+      tier.onchange = async () => { const prev = u.tier; try { await api('/api/admin/users/' + u.id, { method: 'PUT', body: { tier: tier.value } }); u.tier = tier.value; renderStats(); toast(`${u.username} → ${tier.options[tier.selectedIndex].text}`); } catch (e) { tier.value = prev; toast(e.message, true); } };
+      const role = el('select', 'input'); role.setAttribute('aria-label', `Role for ${u.username}`);
+      [['user', 'User'], ['admin', 'Admin']].forEach(([k, v]) => { const o = el('option', null, v); o.value = k; o.selected = u.role === k; role.append(o); });
+      role.disabled = u.id === me.id;
+      role.onchange = async () => { const prev = u.role; if (role.value === 'admin' && !confirm(`Make ${u.username} an admin? They'll be able to edit everything.`)) { role.value = prev; return; } try { await api('/api/admin/users/' + u.id, { method: 'PUT', body: { role: role.value } }); u.role = role.value; renderUsers(); toast('Role updated'); } catch (e) { role.value = prev; toast(e.message, true); } };
+      const reset = el('button', 'btn btn-ghost btn-sm', 'Reset password'); reset.onclick = () => openReset(u);
+      ctrls.append(tier, role, reset);
+      if (u.id !== me.id) { const del = el('button', 'btn btn-danger btn-sm', 'Delete'); del.onclick = async () => { if (!confirm(`Delete ${u.username}? This can't be undone.`)) return; try { await api('/api/admin/users/' + u.id, { method: 'DELETE' }); users = users.filter(x => x.id !== u.id); renderUsers(); toast('User deleted'); } catch (e) { toast(e.message, true); } }; ctrls.append(del); }
+      row.append(who, ctrls); box.append(row);
+    });
+  }
+  $('userSearch').oninput = renderUsers;
+
+  let resetUser = null;
+  function openReset(u) { resetUser = u; $('resetWho').textContent = 'For ' + u.username; $('resetPw').value = ''; const m = $('resetModal'); m.classList.add('open'); m.setAttribute('aria-hidden', 'false'); setTimeout(() => $('resetPw').focus(), 40); }
+  function closeReset() { const m = $('resetModal'); m.classList.remove('open'); m.setAttribute('aria-hidden', 'true'); }
+  $('resetModal').addEventListener('click', e => { if (e.target.id === 'resetModal' || e.target.closest('[data-close]')) closeReset(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeReset(); });
+  $('resetGo').onclick = async () => {
+    const pw = $('resetPw').value; if (pw.length < 6) return toast('Use at least 6 characters', true);
+    try { await api(`/api/admin/users/${resetUser.id}/password`, { method: 'POST', body: { password: pw } }); closeReset(); toast('Password updated'); } catch (e) { toast(e.message, true); }
+  };
+
+  /* ---------- Account ---------- */
+  $('pwForm').addEventListener('submit', async e => {
+    e.preventDefault(); $('pwErr').textContent = '';
+    try { await api('/api/me/password', { method: 'POST', body: { current: $('curPw').value, password: $('newPw').value } }); $('curPw').value = $('newPw').value = ''; toast('Password updated'); }
+    catch (err) { $('pwErr').textContent = err.message; }
+  });
+
+  $('logoutBtn').onclick = async () => { await fetch('/api/logout', { method: 'POST', credentials: 'same-origin' }).catch(() => {}); location.replace('/login'); };
+
+  /* ---------- Init ---------- */
+  (async () => {
+    try {
+      const d = await api('/api/admin/data');
+      S = d.settings; saved = snapshot(); carousel = d.carousel; users = d.users; me = d.me;
+      $('meLine').textContent = 'Signed in as ' + me.username;
+      fillGeneral(); fillPackage(); fillQr(); renderCarousel(); renderUsers();
+      const t = location.hash.slice(1); if (document.querySelector(`[data-panel="${t}"]`)) showTab(t);
+    } catch (e) { if (e.message !== 'auth' && e.message !== 'forbidden') toast(e.message, true); }
+  })();
+})();
+</script>
+</body>
+</html>

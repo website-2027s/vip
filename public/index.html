@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>VIP Channels</title>
+<meta name="theme-color" content="#130C18">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23D9B76E' stroke-width='1.8' stroke-linejoin='round'><path d='M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5L3 8z'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="#/">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5L3 8z"/></svg>
+    <span id="brandName">VIP Channels</span>
+  </a>
+  <div class="top-right">
+    <span class="tier-badge free" id="tierBadge" aria-label="Account type">FREE ACCOUNT</span>
+    <a class="icon-btn hidden" id="adminLink" href="/admin" aria-label="Admin panel">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 00-2 2v.18a2 2 0 01-1 1.73l-.43.25a2 2 0 01-2 0l-.15-.08a2 2 0 00-2.73.73l-.22.38a2 2 0 00.73 2.73l.15.1a2 2 0 011 1.72v.51a2 2 0 01-1 1.74l-.15.09a2 2 0 00-.73 2.73l.22.38a2 2 0 002.73.73l.15-.08a2 2 0 012 0l.43.25a2 2 0 011 1.73V20a2 2 0 002 2h.44a2 2 0 002-2v-.18a2 2 0 011-1.73l.43-.25a2 2 0 012 0l.15.08a2 2 0 002.73-.73l.22-.39a2 2 0 00-.73-2.73l-.15-.08a2 2 0 01-1-1.74v-.5a2 2 0 011-1.74l.15-.09a2 2 0 00.73-2.73l-.22-.38a2 2 0 00-2.73-.73l-.15.08a2 2 0 01-2 0l-.43-.25a2 2 0 01-1-1.73V4a2 2 0 00-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+    </a>
+    <button class="icon-btn" id="logoutBtn" aria-label="Log out">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="wrap" id="main" aria-busy="true">
+  <!-- HOME VIEW -->
+  <div id="homeView">
+    <div class="hero">
+      <h1 id="siteTitle">VIP Channels</h1>
+      <p id="siteSub"></p>
+    </div>
+
+    <section aria-label="Packages">
+      <div class="grid" id="cards"></div>
+    </section>
+
+    <section aria-labelledby="carTitle">
+      <h2 class="section-title" id="carTitle">Our Coffee Beans</h2>
+      <div class="carousel" id="carousel"></div>
+    </section>
+
+    <section class="contact" id="contactSec" aria-labelledby="contactTitle">
+      <h2 class="section-title" id="contactTitle">Need help?</h2>
+      <p>Questions about packages or payments? We're happy to help.</p>
+      <a class="btn btn-primary" id="contactBtn" target="_blank" rel="noopener">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        <span id="contactLabel">Contact us</span>
+      </a>
+    </section>
+
+    <footer class="foot" id="footer"></footer>
+  </div>
+
+  <!-- PACKAGE VIEW -->
+  <div id="pkgView" class="hidden">
+    <div class="pkg-view-head">
+      <a class="icon-btn" href="#/" aria-label="Back to packages">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      </a>
+      <div>
+        <h2 id="pkgTitle" tabindex="-1">Package</h2>
+        <p id="pkgMeta"></p>
+      </div>
+    </div>
+    <div class="upgrade-bar hidden" id="upgradeBar">
+      <p><strong>Locked.</strong> Upgrade to open these channels.</p>
+      <button class="btn btn-primary btn-sm" id="upgradeBarBtn">Upgrade</button>
+    </div>
+    <div class="channels" id="channels"></div>
+  </div>
+</main>
+
+<!-- LOCK POPUP -->
+<div class="modal" id="lockModal" role="dialog" aria-modal="true" aria-labelledby="lockTitle" aria-hidden="true">
+  <div class="sheet">
+    <button class="close" data-close aria-label="Close">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="lock-orb">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 118 0v4"/></svg>
+    </div>
+    <h3 id="lockTitle">This is locked</h3>
+    <p class="sub" id="lockText"></p>
+    <p class="sub" id="lockWhich"></p>
+    <div class="actions">
+      <button class="btn btn-primary" id="lockUpgrade">Upgrade now</button>
+      <button class="btn btn-ghost" data-close>Maybe later</button>
+    </div>
+  </div>
+</div>
+
+<!-- QR / UPGRADE POPUP -->
+<div class="modal" id="qrModal" role="dialog" aria-modal="true" aria-labelledby="qrTitle" aria-hidden="true">
+  <div class="sheet">
+    <button class="close" data-close aria-label="Close">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <h3 id="qrTitle">Upgrade</h3>
+    <div class="pkg-pick" role="group" aria-label="Choose package">
+      <button type="button" data-pick="a" aria-pressed="true">Package A</button>
+      <button type="button" data-pick="b" aria-pressed="false">Package B</button>
+    </div>
+    <p class="sub" style="margin-top:12px"><span id="qrDesc"></span> · Pay <strong id="qrPrice"></strong></p>
+    <div class="qr-frame"><img id="qrImg" alt="Payment QR code" width="600" height="600"></div>
+    <p class="hint" id="qrHint"></p>
+    <div class="actions">
+      <button class="btn btn-primary" id="saveQr">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+        Save QR to Photos
+      </button>
+      <a class="btn btn-ghost" id="sendBtn" target="_blank" rel="noopener">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        Send receipt here
+      </a>
+      <p class="hint">After we confirm your payment, your account is upgraded and the lock opens.</p>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+  const ICON = {
+    lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 118 0v4"/></svg>',
+    open: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 017.5-2"/></svg>',
+    ext: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg>',
+    crown: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5L3 8z"/></svg>',
+    left: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>',
+    right: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>'
+  };
+  const ORDER = ['free', 'a', 'b'];
+  let D = null, pick = 'a', lastFocus = null;
+
+  function toast(msg, err) { const t = $('toast'); t.textContent = msg; t.classList.toggle('err', !!err); t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 2400); }
+
+  async function load() {
+    const r = await fetch('/api/me', { credentials: 'same-origin' });
+    if (r.status === 401) return location.replace('/login');
+    D = await r.json();
+    render(); route();
+    $('main').setAttribute('aria-busy', 'false');
+  }
+
+  function render() {
+    const s = D.settings, u = D.user;
+    document.title = s.siteTitle;
+    $('brandName').textContent = s.siteTitle; $('siteTitle').textContent = s.siteTitle; $('siteSub').textContent = s.siteSub;
+    $('footer').textContent = s.footer;
+    // Tier badge (upper right)
+    const badge = $('tierBadge');
+    badge.className = 'tier-badge ' + u.tier;
+    badge.innerHTML = '';
+    if (u.tier !== 'free') badge.insertAdjacentHTML('afterbegin', ICON.crown);
+    badge.append(u.tier === 'free' ? 'FREE ACCOUNT' : (D.packages[u.tier].name || 'VIP').toUpperCase());
+    $('adminLink').classList.toggle('hidden', u.role !== 'admin');
+
+    // Cards
+    const cards = $('cards'); cards.innerHTML = '';
+    for (const key of ORDER) {
+      const p = D.packages[key];
+      const b = el('button', 'ticket' + (key === 'b' ? ' featured' : ''));
+      b.type = 'button'; b.dataset.key = key;
+      b.setAttribute('aria-label', `${p.name}, ${p.buttons.length} ${p.countLabel}, ${p.locked ? 'locked' : 'unlocked'}. Open.`);
+      const st = el('span', 'state ' + (p.locked ? 'locked' : 'open')); st.innerHTML = p.locked ? ICON.lock : ICON.open; st.append(p.locked ? 'LOCKED' : 'UNLOCKED');
+      b.append(st, el('div', 'pkg', p.name), el('div', 'count', String(p.buttons.length)), el('div', 'count-label', p.countLabel));
+      if (p.desc) b.append(el('p', 'desc', p.desc));
+      const tear = el('div', 'tear'); tear.setAttribute('aria-hidden', 'true'); tear.append(el('span'));
+      const lower = el('div', 'lower'); const price = el('div', 'price', p.price); price.append(el('small', null, p.priceNote)); lower.append(price);
+      lower.append(el('span', 'cta' + (p.locked ? '' : ' ghost'), p.locked ? 'View & upgrade' : 'Open channels'));
+      b.append(tear, lower);
+      b.onclick = () => { location.hash = '#/pkg/' + key; };
+      cards.append(b);
+    }
+
+    // Carousel
+    $('carTitle').textContent = s.carouselTitle;
+    renderCarousel();
+
+    // Contact
+    $('contactLabel').textContent = s.contactLabel || 'Contact us';
+    $('contactSec').classList.toggle('hidden', !s.contactUrl);
+    if (s.contactUrl) $('contactBtn').href = s.contactUrl;
+
+    // Lock / QR text
+    $('lockTitle').textContent = s.lockTitle; $('lockText').textContent = s.lockText;
+    $('qrImg').src = s.qrUrl; $('qrHint').textContent = s.qrHint;
+    document.querySelectorAll('[data-pick]').forEach(bt => bt.textContent = D.packages[bt.dataset.pick].name);
+  }
+
+  function renderCarousel() {
+    const box = $('carousel'); box.innerHTML = '';
+    const items = D.carousel;
+    if (!items.length) { box.append(el('p', 'empty', 'Photos coming soon.')); return; }
+    const track = el('div', 'track'); track.tabIndex = 0; track.setAttribute('aria-label', 'Coffee bean photos, swipe left or right');
+    items.forEach((it, i) => {
+      const f = el('figure', 'slide'); f.setAttribute('aria-roledescription', 'slide'); f.setAttribute('aria-label', `${i + 1} of ${items.length}`);
+      const img = el('img'); img.src = it.url; img.alt = it.caption || `Coffee beans photo ${i + 1}`; img.loading = i < 2 ? 'eager' : 'lazy'; img.decoding = 'async'; img.width = 800; img.height = 600;
+      f.append(img); if (it.caption) f.append(el('figcaption', null, it.caption));
+      track.append(f);
+    });
+    const prev = el('button', 'car-nav prev'); prev.innerHTML = ICON.left; prev.setAttribute('aria-label', 'Previous photo');
+    const next = el('button', 'car-nav next'); next.innerHTML = ICON.right; next.setAttribute('aria-label', 'Next photo');
+    const dots = el('div', 'dots');
+    const go = i => { const s = track.children[Math.max(0, Math.min(items.length - 1, i))]; track.scrollTo({ left: s.offsetLeft - (track.clientWidth - s.clientWidth) / 2, behavior: 'smooth' }); };
+    const cur = () => { let best = 0, bd = Infinity; const mid = track.scrollLeft + track.clientWidth / 2; [...track.children].forEach((s, i) => { const d = Math.abs(s.offsetLeft + s.clientWidth / 2 - mid); if (d < bd) { bd = d; best = i; } }); return best; };
+    items.forEach((_, i) => { const d = el('button'); d.setAttribute('aria-label', `Show photo ${i + 1}`); d.onclick = () => go(i); dots.append(d); });
+    const sync = () => { const c = cur(); [...dots.children].forEach((d, i) => d.setAttribute('aria-current', String(i === c))); prev.disabled = c === 0; next.disabled = c === items.length - 1; prev.style.opacity = c === 0 ? .4 : 1; next.style.opacity = c === items.length - 1 ? .4 : 1; };
+    prev.onclick = () => go(cur() - 1); next.onclick = () => go(cur() + 1);
+    track.addEventListener('scroll', () => { cancelAnimationFrame(sync.r); sync.r = requestAnimationFrame(sync); }, { passive: true });
+    track.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') { e.preventDefault(); go(cur() - 1); } if (e.key === 'ArrowRight') { e.preventDefault(); go(cur() + 1); } });
+    box.append(track); if (items.length > 1) box.append(prev, next, dots);
+    requestAnimationFrame(sync);
+  }
+
+  function renderPackage(key) {
+    const p = D.packages[key];
+    $('pkgTitle').textContent = p.name;
+    $('pkgMeta').textContent = `${p.buttons.length} ${p.countLabel}` + (p.locked ? ' · Locked' : '');
+    $('upgradeBar').classList.toggle('hidden', !p.locked);
+    $('upgradeBarBtn').onclick = () => openQr(key === 'free' ? 'a' : key);
+    const box = $('channels'); box.innerHTML = '';
+    p.buttons.forEach((b, i) => {
+      const locked = p.locked;
+      const hasUrl = !locked && b.url;
+      const node = hasUrl ? el('a', 'channel') : el('button', 'channel' + (locked ? ' locked' : ''));
+      if (hasUrl) { node.href = b.url; node.target = '_blank'; node.rel = 'noopener'; }
+      else node.type = 'button';
+      node.append(el('span', 'num', String(i + 1)), el('span', 'label', b.name));
+      node.insertAdjacentHTML('beforeend', locked ? ICON.lock : ICON.ext);
+      if (locked) { node.setAttribute('aria-label', b.name + ' (locked)'); node.onclick = () => openLock(key, node); }
+      else if (!hasUrl) node.onclick = () => toast('Link not set yet');
+      box.append(node);
+    });
+  }
+
+  function route() {
+    const m = /^#\/pkg\/(free|a|b)$/.exec(location.hash);
+    const onPkg = !!(m && D);
+    $('homeView').classList.toggle('hidden', onPkg);
+    $('pkgView').classList.toggle('hidden', !onPkg);
+    if (onPkg) { renderPackage(m[1]); window.scrollTo(0, 0); $('pkgTitle').focus({ preventScroll: true }); }
+  }
+  window.addEventListener('hashchange', route);
+
+  /* ---------- Modals ---------- */
+  function openModal(id, from) {
+    lastFocus = from || document.activeElement;
+    const m = $(id); m.classList.add('open'); m.setAttribute('aria-hidden', 'false'); document.body.style.overflow = 'hidden';
+    setTimeout(() => m.querySelector('.close').focus(), 40);
+  }
+  function closeModal(id) {
+    const m = $(id); m.classList.remove('open'); m.setAttribute('aria-hidden', 'true');
+    if (!document.querySelector('.modal.open')) document.body.style.overflow = '';
+    if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
+  }
+  document.querySelectorAll('.modal').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m || e.target.closest('[data-close]')) closeModal(m.id); });
+  });
+  document.addEventListener('keydown', e => {
+    const open = document.querySelector('.modal.open'); if (!open) return;
+    if (e.key === 'Escape') closeModal(open.id);
+    if (e.key === 'Tab') { // focus trap
+      const f = [...open.querySelectorAll('button,a[href]')].filter(x => !x.disabled && x.offsetParent);
+      if (!f.length) return; const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+
+  function openLock(key, from) {
+    const p = D.packages[key];
+    $('lockWhich').innerHTML = ''; $('lockWhich').append('Unlock with ', el('strong', null, `${p.name} · ${p.price}`));
+    $('lockUpgrade').onclick = () => { closeModal('lockModal'); openQr(key, from); };
+    openModal('lockModal', from);
+  }
+  function setPick(key) {
+    pick = key; const p = D.packages[key];
+    document.querySelectorAll('[data-pick]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.pick === key)));
+    $('qrTitle').textContent = 'Upgrade to ' + p.name;
+    $('qrDesc').textContent = `${p.buttons.length} ${p.countLabel}`; $('qrPrice').textContent = p.price;
+  }
+  document.querySelectorAll('[data-pick]').forEach(b => b.onclick = () => setPick(b.dataset.pick));
+  function openQr(key, from) {
+    setPick(key === 'b' ? 'b' : 'a');
+    const s = D.settings;
+    if (s.sendUrl) { $('sendBtn').href = s.sendUrl; $('sendBtn').classList.remove('hidden'); } else $('sendBtn').classList.add('hidden');
+    openModal('qrModal', from);
+  }
+
+  $('saveQr').onclick = async () => {
+    try {
+      const res = await fetch(D.settings.qrUrl); const blob = await res.blob();
+      const ext = (blob.type.split('/')[1] || 'png').replace('jpeg', 'jpg');
+      const file = new File([blob], 'Payment-QR.' + ext, { type: blob.type });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: 'Payment QR' }); return; }
+      const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = file.name;
+      document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000); toast('QR saved');
+    } catch (err) { if (err && err.name === 'AbortError') return; toast('Long-press the QR to save it'); }
+  };
+
+  $('logoutBtn').onclick = async () => { await fetch('/api/logout', { method: 'POST', credentials: 'same-origin' }).catch(() => {}); location.replace('/login'); };
+
+  load().catch(() => toast('Could not load. Refresh the page.', true));
+})();
+</script>
+</body>
+</html>
